@@ -3,12 +3,17 @@
 # Expects this repo at ~/Wallpapers (the player reads ~/Wallpapers/clips-hd).
 set -e
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-LABEL=local.livewallpaper
+LABEL=${LABEL:-local.livewallpaper}
 PLIST="$HOME/Library/LaunchAgents/$LABEL.plist"
 
 for t in ffmpeg ffprobe yt-dlp swiftc; do
   command -v $t >/dev/null || { echo "missing $t (brew install ffmpeg yt-dlp; xcode-select --install)"; exit 1; }
 done
+
+if ! python3 -c "import numpy" 2>/dev/null; then
+  echo "installing numpy (used by the clip checker)"
+  python3 -m pip install --user --quiet numpy 2>/dev/null || python3 -m pip install --user --quiet --break-system-packages numpy
+fi
 
 if [ ! -x "$ROOT/tools/resr/realesrgan-ncnn-vulkan" ]; then
   echo "downloading Real-ESRGAN"

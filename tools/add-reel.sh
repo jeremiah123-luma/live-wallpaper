@@ -31,5 +31,5 @@ echo "4/4 saving a still and restarting the player"
 mkdir -p "$ROOT/stills"
 mid=$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$ROOT/clips-hd/$clip.mp4" | awk '{print $1/2}')
 ffmpeg -v error -y -ss "$mid" -i "$ROOT/clips-hd/$clip.mp4" -frames:v 1 "$ROOT/stills/$clip.png"
-launchctl kickstart -k "gui/$(id -u)/local.livewallpaper"
+launchctl kickstart -k "gui/$(id -u)/${LABEL:-local.livewallpaper}" 2>/dev/null || echo "    (player not running yet: run tools/setup.sh)"
 echo "added $clip"
