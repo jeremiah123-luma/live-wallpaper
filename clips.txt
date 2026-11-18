@@ -1,0 +1,9 @@
+# The six clips in my rotation, all by Lukyan Art (https://www.instagram.com/lukyan_illustrations/).
+# tools/get-clips.sh downloads and builds every one you don't have yet, in this order.
+# format: <reel link> <name> [keep]    "keep" = play it exactly as posted, skip the loop fix
+https://www.instagram.com/reel/DeSXnqOoeEW/ gethsemane keep
+https://www.instagram.com/reel/DesSsJVoVpU/ ascension
+https://www.instagram.com/reel/De9e--4BQkz/ arena
+https://www.instagram.com/reel/DfIGJGpIL5K/ athos
+https://www.instagram.com/reel/DfpOHlOhFw5/ icon-room
+https://www.instagram.com/reel/Df3N02Fz2_t/ empty-tomb

@@ -1,9 +1,10 @@
 #!/bin/bash
 # Adds an Instagram reel (or any video URL yt-dlp can read) to the rotation.
-# usage: tools/add-reel.sh <url> <short-name>      e.g. tools/add-reel.sh https://www.instagram.com/reel/... empty-tomb
+# usage: tools/add-reel.sh <url> <short-name> [--keep]   e.g. tools/add-reel.sh https://www.instagram.com/reel/... empty-tomb
+#        --keep plays the clip exactly as posted (no black-frame trim or loop blend)
 set -e
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-url="$1"; name="$2"
+url="$1"; name="$2"; keep="$3"
 [ -n "$url" ] && [ -n "$name" ] || { echo "usage: $0 <url> <short-name>"; exit 1; }
 
 n=$(( $(ls "$ROOT"/clips-src/*.mp4 2>/dev/null | wc -l) + 1 ))
@@ -16,7 +17,7 @@ yt-dlp -q --no-warnings -f "bv*+ba/b" --merge-output-format mp4 -o "$tmp/raw.mp4
 
 echo "2/4 checking for black frames and a loop jump"
 mkdir -p "$ROOT/clips-src"
-if python3 "$ROOT/tools/check_clip.py" "$tmp/raw.mp4"; then
+if [ "$keep" = "--keep" ] || python3 "$ROOT/tools/check_clip.py" "$tmp/raw.mp4"; then
   ffmpeg -v error -i "$tmp/raw.mp4" -an -c copy "$ROOT/clips-src/$clip.mp4"
 else
   echo "    fixing: keeping the clean stretch and blending the loop"
