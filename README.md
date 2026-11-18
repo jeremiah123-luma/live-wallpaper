@@ -1,0 +1,69 @@
+# Live Wallpaper
+
+**Runs every day on my Mac.** It plays my rotation of six pixel-art clips behind the desktop icons.
+
+Live Wallpaper turns short pixel-art videos into a moving Mac desktop. A small Swift app plays the clips behind your icons and switches to the next one every 15 minutes. A shell pipeline takes a link to an Instagram reel and turns it into a clean 4K loop. It downloads the video, finds black frames and the jump where the clip restarts, fixes both, upscales the pixel art with Real-ESRGAN, and adds it to the rotation.
+
+The clips themselves aren't in this repo. They are other artists' work, so they stay on my Mac and are listed in `.gitignore`.
+
+## Why I built this
+
+I kept saving pixel-art reels on Instagram, scenes like Gethsemane, an icon room, and the empty tomb, and I wanted them on my Mac instead of sitting in my saved folder. The Mac doesn't have a way to use a video as your wallpaper, so I built a small player that sits behind the desktop and rotates through them every 15 minutes. Once they were up on a big screen, the 720p downloads looked soft, so I added an upscaling step that redraws each frame at 4K. Then the newest clip turned out to have almost a second of black in the middle of it, and that is how the pipeline ended up checking every clip before it goes up.
+
+## How it works
+
+1. **Download.** `tools/add-reel.sh` pulls the reel with yt-dlp.
+2. **Check.** `tools/check_clip.py` shrinks each frame to 160x90, then looks for black frames and compares the last frame with the first. If the jump at the loop point is more than twice the biggest normal frame-to-frame change, the loop will visibly pop.
+3. **Fix.** If a clip fails, the checker keeps its longest stretch without black frames. It then fades the last second into the first second, so the final frame is the frame just before the loop point and the clip restarts without a jump.
+4. **Upscale.** `tools/upscale.sh` splits the clip into frames and runs Real-ESRGAN's `realesr-animevideov3` model on each one: 4x for 720p sources, 2x for 1080p. It then encodes the result as 4K HEVC.
+5. **Play.** `src/main.swift` (AppKit + AVFoundation) puts a borderless window at desktop level on every screen and loops the clip with `AVPlayerLooper`. It moves to the next clip every 15 minutes. A 🖼 menu in the menu bar has Next wallpaper, Pause / Resume, and Quit.
+
+### Problems I ran into
+
+- **Black frames in a downloaded reel.** The empty tomb reel goes black for 24 frames (0.8 s) in the middle, so the desktop went black every 20 seconds. That is why the checker exists.
+- **Loops that jump.** Most reels aren't made to loop. My first fix used ffmpeg's `xfade`, but its last frame is still partly the old picture, so the loop still popped. The fix now builds the blend by hand with an alpha fade, which ends exactly on the frame before the loop point.
+- **A black flash on every switch.** The player used to swap in the next clip before its first frame was decoded. Now the new clip goes on a second layer and fades in only once `isReadyForDisplay` is true.
+- **Decoding 4K for nobody.** One night the player decoded about 785,000 frames but only about 37,000 reached the screen, because it kept going with the display off. It now pauses when the screen sleeps or locks, and starts again when you come back.
+- **The upscaler crashed with no error.** Real-ESRGAN looks for its models relative to the current folder, so it segfaulted whenever the script ran from anywhere else. The script now passes `-m` with the full path.
+
+## Tech stack
+
+- **Swift** (AppKit, AVFoundation, Core Animation) for the player, built with `swiftc`, no Xcode project
+- **Python** with NumPy for the clip checker
+- **Bash** for the pipeline
+- **ffmpeg** for frames, trimming, the loop blend, and HEVC encoding (VideoToolbox)
+- **yt-dlp** for downloading
+- **[Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN)** (ncnn-vulkan build) for upscaling
+- **launchd** to start the player at login
+
+I built it with help from Claude Code.
+
+## Run it
+
+Needs macOS, the Xcode command line tools, ffmpeg, and yt-dlp. The player reads clips from `~/Wallpapers/clips-hd`, so clone the repo there.
+
+```bash
+xcode-select --install          # if swiftc is missing
+brew install ffmpeg yt-dlp
+git clone https://github.com/jeremiah123-luma/live-wallpaper.git ~/Wallpapers
+cd ~/Wallpapers
+tools/setup.sh                  # downloads Real-ESRGAN, builds the player, starts it at login
+tools/add-reel.sh "https://www.instagram.com/reel/..." my-clip
+```
+
+`add-reel.sh` numbers clips in the order you add them, and they play in that order. To check a clip without changing anything, run `python3 tools/check_clip.py clips-hd/1-my-clip.mp4`. To test rotation without waiting 15 minutes, run `LW_ROTATE=6 ./LiveWallpaper` (after stopping the login agent).
+
+## Folder layout
+
+| Path | What's there | In git |
+|---|---|---|
+| `src/main.swift` | the player | yes |
+| `tools/` | setup, add-reel, upscale, and the clip checker | yes |
+| `clips-src/` | downloaded (and fixed) clips | no |
+| `clips-hd/` | the 4K clips the player plays | no |
+| `stills/` | one frame from each clip, for a normal desktop picture | no |
+| `tools/resr/` | Real-ESRGAN, downloaded by setup | no |
+
+## License
+
+MIT. See [LICENSE](LICENSE). Real-ESRGAN is BSD-3-Clause and is downloaded, not included.

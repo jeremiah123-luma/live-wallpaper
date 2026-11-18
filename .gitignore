@@ -1,0 +1,15 @@
+# The videos and stills are other artists' work; they stay on my Mac.
+clips-src/
+clips-hd/
+stills/
+work/
+
+# Downloaded by tools/setup.sh
+tools/resr/
+
+# Built by tools/setup.sh
+LiveWallpaper
+
+upscale.log
+.DS_Store
+__pycache__/
