@@ -6,6 +6,15 @@ Live Wallpaper turns short pixel-art videos into a moving Mac desktop. A small S
 
 All six clips in my rotation are by **[Lukyan Art](https://www.instagram.com/lukyan_illustrations/)**. Anyone can get the same six: `clips.txt` lists the reels, and `tools/get-clips.sh` downloads and builds all of them. The video files aren't uploaded here because they are Lukyan's work (and the 4K files are too big for GitHub), so each copy comes straight from the original posts. Go follow them.
 
+## What it looks like
+
+Six seconds from two of the clips, shrunk down. On the desktop they play at 4K and loop.
+
+| Polycarp in the arena | Constantinople from the icon room |
+|---|---|
+| ![Polycarp standing in the arena](preview/polycarp.gif) | ![An icon corner with a window onto Constantinople](preview/constantinople.gif) |
+| [Original reel](https://www.instagram.com/reel/De9e--4BQkz/) by Lukyan Art | [Original reel](https://www.instagram.com/reel/DfpOHlOhFw5/) by Lukyan Art |
+
 ## Why I built this
 
 I kept saving pixel-art reels on Instagram, scenes like Gethsemane, an icon room, and the empty tomb, and I wanted them on my Mac instead of sitting in my saved folder. The Mac doesn't have a way to use a video as your wallpaper, so I built a small player that sits behind the desktop and rotates through them every 15 minutes. Once they were up on a big screen, the 720p downloads looked soft, so I added an upscaling step that redraws each frame at 4K. Then the newest clip turned out to have almost a second of black in the middle of it, and that is how the pipeline ended up checking every clip before it goes up.
@@ -66,6 +75,7 @@ tools/add-reel.sh "https://www.instagram.com/reel/..." my-clip
 | `src/main.swift` | the player | yes |
 | `clips.txt` | links to the six reels in my rotation | yes |
 | `tools/` | setup, get-clips, add-reel, upscale, and the clip checker | yes |
+| `preview/` | the two short previews shown above | yes |
 | `clips-src/` | downloaded (and fixed) clips | no |
 | `clips-hd/` | the 4K clips the player plays | no |
 | `stills/` | one frame from each clip, for a normal desktop picture | no |
