@@ -14,6 +14,10 @@ if ! python3 -c "import numpy" 2>/dev/null; then
   echo "installing numpy (used by the clip checker)"
   python3 -m pip install --user --quiet numpy 2>/dev/null || python3 -m pip install --user --quiet --break-system-packages numpy
 fi
+if ! python3 -c "import cv2" 2>/dev/null; then
+  echo "installing opencv (used to grow the sides of portrait reels)"
+  python3 -m pip install --user --quiet opencv-python-headless 2>/dev/null || python3 -m pip install --user --quiet --break-system-packages opencv-python-headless
+fi
 
 if [ ! -x "$ROOT/tools/resr/realesrgan-ncnn-vulkan" ]; then
   echo "downloading Real-ESRGAN"

@@ -1,10 +1,10 @@
 # Live Wallpaper
 
-**Runs every day on my Mac.** It plays my rotation of six pixel-art clips behind the desktop icons.
+**Runs every day on my Mac.** It plays my rotation of eight pixel-art clips behind the desktop icons.
 
 Live Wallpaper turns short pixel-art videos into a moving Mac desktop. A small Swift app plays the clips behind your icons and switches to the next one every 15 minutes. A shell pipeline takes a link to an Instagram reel and turns it into a clean 4K loop. It downloads the video, finds black frames and the jump where the clip restarts, fixes both, upscales the pixel art with Real-ESRGAN, and adds it to the rotation.
 
-All six clips in my rotation are by **[Lukyan Art](https://www.instagram.com/lukyan_illustrations/)**. Anyone can get the same six: `clips.txt` lists the reels, and `tools/get-clips.sh` downloads and builds all of them. The video files aren't uploaded here because they are Lukyan's work (and the 4K files are too big for GitHub), so each copy comes straight from the original posts. Go follow them.
+Seven of the eight clips in my rotation are by **[Lukyan Art](https://www.instagram.com/lukyan_illustrations/)**. The eighth, a knight above a storm sea, is a reel by **[Lost Kingdom](https://www.instagram.com/lostkingdom.mov/)** that the pipeline turns into pixel art. Anyone can get the same eight: `clips.txt` lists the reels, and `tools/get-clips.sh` downloads and builds all of them. The video files aren't uploaded here because they are the artists' work (and the 4K files are too big for GitHub), so each copy comes straight from the original posts. Go follow them.
 
 ## What it looks like
 
@@ -25,7 +25,8 @@ I kept saving pixel-art reels on Instagram, scenes like Gethsemane, an icon room
 2. **Check.** `tools/check_clip.py` shrinks each frame to 160x90, then looks for black frames and compares the last frame with the first. If the jump at the loop point is more than twice the biggest normal frame-to-frame change, the loop will visibly pop.
 3. **Fix.** If a clip fails, the checker keeps its longest stretch without black frames. It then fades the last second into the first second, so the final frame is the frame just before the loop point and the clip restarts without a jump.
 4. **Upscale.** `tools/upscale.sh` splits the clip into frames and runs Real-ESRGAN's `realesr-animevideov3` model on each one: 4x for 720p sources, 2x for 1080p. It then encodes the result as 4K HEVC.
-5. **Play.** `src/main.swift` (AppKit + AVFoundation) puts a borderless window at desktop level on every screen and loops the clip with `AVPlayerLooper`. It moves to the next clip every 15 minutes. A 🖼 menu in the menu bar has Next wallpaper, Pause / Resume, and Quit.
+5. **Fit the screen (only for portrait reels).** A reel is tall and a Mac screen is wide. `--crop=W:H:X:Y` cuts a landscape window out of it. `--extend` keeps the whole reel in the middle and runs `tools/extend_sides.py`, which builds new sides out of patches of the reel's own sky and ground, lined up on the art's pixel grid and never copied from the figure. `--pixel` runs `tools/pixelate.sh` on ordinary footage: it shrinks it to a coarse grid and limits it to one 40-colour palette for the whole clip.
+6. **Play.** `src/main.swift` (AppKit + AVFoundation) puts a borderless window at desktop level on every screen and loops the clip with `AVPlayerLooper`. It moves to the next clip every 15 minutes. A 🖼 menu in the menu bar has Next wallpaper, Pause / Resume, and Quit.
 
 ### Problems I ran into
 
@@ -38,7 +39,7 @@ I kept saving pixel-art reels on Instagram, scenes like Gethsemane, an icon room
 ## Tech stack
 
 - **Swift** (AppKit, AVFoundation, Core Animation) for the player, built with `swiftc`, no Xcode project
-- **Python** with NumPy for the clip checker
+- **Python** with NumPy for the clip checker, and OpenCV for growing the sides of a portrait reel
 - **Bash** for the pipeline
 - **ffmpeg** for frames, trimming, the loop blend, and HEVC encoding (VideoToolbox)
 - **yt-dlp** for downloading
@@ -49,7 +50,7 @@ I built it with help from Claude Code.
 
 ## Run it
 
-Needs macOS (Apple Silicon or Intel), the Xcode command line tools, Homebrew for ffmpeg and yt-dlp, and Python 3 (setup installs NumPy). The player reads clips from `~/Wallpapers/clips-hd`, so clone the repo there.
+Needs macOS (Apple Silicon or Intel), the Xcode command line tools, Homebrew for ffmpeg and yt-dlp, and Python 3 (setup installs NumPy and OpenCV). The player reads clips from `~/Wallpapers/clips-hd`, so clone the repo there.
 
 ```bash
 xcode-select --install          # if swiftc is missing
@@ -57,7 +58,7 @@ brew install ffmpeg yt-dlp
 git clone https://github.com/jeremiah123-luma/live-wallpaper.git ~/Wallpapers
 cd ~/Wallpapers
 tools/setup.sh                  # downloads Real-ESRGAN, builds the player, starts it at login
-tools/get-clips.sh              # gets my six clips (about 10 minutes each, mostly upscaling)
+tools/get-clips.sh              # gets my eight clips (10 minutes to an hour each, mostly upscaling)
 ```
 
 To add your own reel instead, or on top of mine:
@@ -73,8 +74,8 @@ tools/add-reel.sh "https://www.instagram.com/reel/..." my-clip
 | Path | What's there | In git |
 |---|---|---|
 | `src/main.swift` | the player | yes |
-| `clips.txt` | links to the six reels in my rotation | yes |
-| `tools/` | setup, get-clips, add-reel, upscale, and the clip checker | yes |
+| `clips.txt` | links to the eight reels in my rotation, with each one's options | yes |
+| `tools/` | setup, get-clips, add-reel, upscale, the clip checker, extend_sides, and pixelate | yes |
 | `preview/` | the two short previews shown above | yes |
 | `clips-src/` | downloaded (and fixed) clips | no |
 | `clips-hd/` | the 4K clips the player plays | no |

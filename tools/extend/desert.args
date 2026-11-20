@@ -1,0 +1,1 @@
+--avoid 430:790:960:1640 --avoid 300:1640:760:1920 --loose-below 1140 --shift 26 --cap R=2 --seed 3
