@@ -1,4 +1,4 @@
-# The eight clips in my rotation. The first seven are by Lukyan Art (https://www.instagram.com/lukyan_illustrations/);
+# The nine clips in my rotation. All but the knight are by Lukyan Art (https://www.instagram.com/lukyan_illustrations/);
 # the knight is by Lost Kingdom (https://www.instagram.com/lostkingdom.mov/), turned into pixel art here.
 # tools/get-clips.sh downloads and builds every one you don't have yet, in this order.
 # format: <reel link> <name> [options]
@@ -15,3 +15,4 @@ https://www.instagram.com/reel/DfpOHlOhFw5/ icon-room
 https://www.instagram.com/reel/Df3N02Fz2_t/ empty-tomb
 https://www.instagram.com/reel/Df8PpAhTfa3/ desert extend blend
 https://www.instagram.com/reel/Dff9IP9svwk/ knight crop=1080:702:0:1080 pixel
+https://www.instagram.com/reel/DgI4dKuz4mv/ exodus blend
