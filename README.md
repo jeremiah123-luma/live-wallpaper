@@ -1,10 +1,10 @@
 # Live Wallpaper
 
-**Runs every day on my Mac.** It plays my rotation of nine pixel-art clips behind the desktop icons.
+**Runs every day on my Mac.** It plays my rotation of ten pixel-art clips behind the desktop icons.
 
 Live Wallpaper turns short pixel-art videos into a moving Mac desktop. A small Swift app plays the clips behind your icons and switches to the next one every 15 minutes. A shell pipeline takes a link to an Instagram reel and turns it into a clean 4K loop. It downloads the video, finds black frames and the jump where the clip restarts, fixes both, upscales the pixel art with Real-ESRGAN, and adds it to the rotation.
 
-Eight of the nine clips in my rotation are by **[Lukyan Art](https://www.instagram.com/lukyan_illustrations/)**. The odd one out, a knight above a storm sea, is a reel by **[Lost Kingdom](https://www.instagram.com/lostkingdom.mov/)** that the pipeline turns into pixel art. Anyone can get the same nine: `clips.txt` lists the reels, and `tools/get-clips.sh` downloads and builds all of them. The video files aren't uploaded here because they are the artists' work (and the 4K files are too big for GitHub), so each copy comes straight from the original posts. Go follow them.
+Nine of the ten clips in my rotation are by **[Lukyan Art](https://www.instagram.com/lukyan_illustrations/)**. The odd one out, a knight above a storm sea, is a reel by **[Lost Kingdom](https://www.instagram.com/lostkingdom.mov/)** that the pipeline turns into pixel art. Anyone can get the same ten: `clips.txt` lists the reels, and `tools/get-clips.sh` downloads and builds all of them. The video files aren't uploaded here because they are the artists' work (and the 4K files are too big for GitHub), so each copy comes straight from the original posts. Go follow them.
 
 ## What it looks like
 
@@ -58,7 +58,7 @@ brew install ffmpeg yt-dlp
 git clone https://github.com/jeremiah123-luma/live-wallpaper.git ~/Wallpapers
 cd ~/Wallpapers
 tools/setup.sh                  # downloads Real-ESRGAN, builds the player, starts it at login
-tools/get-clips.sh              # gets my nine clips (10 minutes to an hour each, mostly upscaling)
+tools/get-clips.sh              # gets my ten clips (10 minutes to an hour each, mostly upscaling)
 ```
 
 To add your own reel instead, or on top of mine:
@@ -74,7 +74,7 @@ tools/add-reel.sh "https://www.instagram.com/reel/..." my-clip
 | Path | What's there | In git |
 |---|---|---|
 | `src/main.swift` | the player | yes |
-| `clips.txt` | links to the nine reels in my rotation, with each one's options | yes |
+| `clips.txt` | links to the ten reels in my rotation, with each one's options | yes |
 | `tools/` | setup, get-clips, add-reel, upscale, the clip checker, extend_sides, and pixelate | yes |
 | `preview/` | the two short previews shown above | yes |
 | `clips-src/` | downloaded (and fixed) clips | no |
